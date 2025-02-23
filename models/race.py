@@ -6,5 +6,4 @@ class Race(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     nom: str = Field(unique=True, index=True)
     espece_id: int = Field(foreign_key="espece.id")
-    espece: Optional[Espece] = Relationship(back_populates="races")
-    animaux: List["Animal"] = Relationship(back_populates="race")
+    espece: Optional["Espece"] = Relationship(back_populates="races")

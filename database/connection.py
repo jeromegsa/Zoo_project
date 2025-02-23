@@ -1,4 +1,4 @@
-from sqlmodel import create_engine, SQLModel
+from sqlmodel import create_engine, SQLModel, Session
 
 # URL de connexion à la base de données MySQL
 DATABASE_URL = "mysql+mysqldb://root@localhost/animaux_db"
@@ -10,3 +10,11 @@ engine = create_engine(DATABASE_URL)
 def create_tables():
     SQLModel.metadata.create_all(engine)
     print("Tables créées avec succès !")
+    
+def get_session():
+    with Session(engine) as session:
+        yield session
+    # Supprime et recrée les tables
+def reset_db():
+    SQLModel.metadata.drop_all(engine)  # Supprime toutes les tables
+    SQLModel.metadata.create_all(engine)  # Recrée les tables

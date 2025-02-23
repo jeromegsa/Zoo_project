@@ -6,3 +6,4 @@ from .animal import Animal
 from .annonce import Annonce
 from .animal_image import AnimalImage
 from .vétérinaire import Veterinaire
+# from .token import Token
