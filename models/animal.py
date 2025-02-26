@@ -8,6 +8,8 @@ class Animal(SQLModel, table=True):
     nom: str = Field(index=True)
     age: Optional[int] = None
     poids: Optional[int]=Field(ge=1)
+    couleur:Optional[str]=Field(default= "Noire")
+    regime_alimentaire:Optional[str]
     date_last_vaccin: datetime.date
    
     

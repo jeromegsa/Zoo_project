@@ -11,5 +11,4 @@ class Catalogue(SQLModel, table =True):
     animals: List[Animal]=Relationship(
        back_populates= "catalogue"
    )
-    refuge_id: int=Field(foreign_key="refuge.id")
     user_id: int =Field(foreign_key= "user.id")
