@@ -7,7 +7,7 @@ class User(SQLModel, table=True):
     nom: str = Field(index=True)
     email: str = Field(unique=True, index=True)
     password: str
-    animaux: List["Animal"] = Relationship(back_populates="user")
+    catalogues:List["Catalogue"]=Relationship(back_populates="user")
     annonces: List["Annonce"] = Relationship(back_populates="user")
     veterinaire: Optional["Veterinaire"] = Relationship(back_populates="user", sa_relationship_kwargs={"uselist": False})
     
