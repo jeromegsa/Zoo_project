@@ -1,1 +1,1 @@
-from  .token_schema import Token, TokenData
+from  .token_schema import TokenData

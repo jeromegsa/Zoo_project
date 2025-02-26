@@ -15,12 +15,20 @@ class User(SQLModel, table=True):
     prenom:str =Field( default="John")
     email: str = Field(unique=True, index=True)
     password: str=Field(default="00000000")
-    localisation: str
+    localisation: str=Field(default="Cotonou")
     catalogues:List["Catalogue"]=Relationship(back_populates="user")
     annonces: List["Annonce"] = Relationship(back_populates="user")
     veterinaire: Optional["Veterinaire"] = Relationship(back_populates="user", sa_relationship_kwargs={"uselist": False})
-    roles:RoleEnum=Field(default=RoleEnum.User)
+    role:RoleEnum=Field(default=RoleEnum.User)
     
-    
+class UserCreate(SQLModel):
+    username: str
+    nom : str
+    prenom:str
+    email: str
+    password: str
+    localisation:str
+    role: RoleEnum
+
 
 
