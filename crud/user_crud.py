@@ -1,5 +1,5 @@
 from fastapi import  Depends, HTTPException 
-from sqlmodel  import Session
+from sqlmodel  import Session,select
 from database import get_session
 from models import User, UserCreate
 from passlib.context import CryptContext
@@ -37,3 +37,14 @@ def store(user_data : UserCreate, session : Session =Depends (get_session)):
     session.commit()
     session.refresh(new_user)
     return new_user
+
+def get_users(session: Session = Depends(get_session)):
+    """
+    Récupère tous les utilisateurs de la base de données
+    """
+    try:
+        users =  session.query(User).all()
+        return users
+    except Exception as e :
+        print (e)
+
