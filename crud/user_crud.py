@@ -2,6 +2,7 @@ from fastapi import  Depends, HTTPException
 from sqlmodel  import Session,select
 from database import get_session
 from models import User, UserCreate
+from dependencies import get_current_user
 from passlib.context import CryptContext
 
 pwd_context =CryptContext(schemes=['bcrypt'], deprecated ="auto")
@@ -38,13 +39,13 @@ def store(user_data : UserCreate, session : Session =Depends (get_session)):
     session.refresh(new_user)
     return new_user
 
-def get_users(session: Session = Depends(get_session)):
+def get_users(session: Session = Depends(get_session),current_user: User=Depends(get_current_user)):
     """
     Récupère tous les utilisateurs de la base de données
     """
     try:
         users =  session.query(User).all()
         return users
-    except Exception as e :
+    except HTTPException as e :
         print (e)
 
