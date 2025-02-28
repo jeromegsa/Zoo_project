@@ -9,6 +9,9 @@ app.include_router(auth.router)
 #inclure le routeur des utilisateurs 
 app.include_router(user_router.router)
 
+#inclure le routeur des utilisateurs 
+app.include_router(user_router.router)
+
 @app.on_event("startup")
 def on_startup():
     # reset_db()

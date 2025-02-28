@@ -1,6 +1,6 @@
+import datetime
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List
-import datetime
 
 
 class Animal(SQLModel, table=True):
@@ -15,9 +15,10 @@ class Animal(SQLModel, table=True):
     
     # Relation avec la table Espece
     espece_id: int = Field(foreign_key="espece.id")  # Obligatoire
-    espece: Optional["Espece"] = Relationship(back_populates="animaux")
+    espece: Optional["Espece"] = Relationship(back_populates="animaux")  #
     
     catalogue_id:Optional[int]=Field(default= None, foreign_key="catalogue.id")
+    catalogue: Optional["Catalogue"] = Relationship(back_populates="animals")
    
     annonces: List["Annonce"] = Relationship(back_populates="animal")
     images: List["AnimalImage"] = Relationship(back_populates="animal")

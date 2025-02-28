@@ -12,8 +12,12 @@ def create_tables():
     print("Tables créées avec succès !")
     
 def get_session():
-    with Session(engine) as session:
+    session = Session(engine)
+    try:
         yield session
+    finally:
+        session.close()
+
     # Supprime et recrée les tables
 def reset_db():
     SQLModel.metadata.drop_all(engine)  # Supprime toutes les tables

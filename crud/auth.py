@@ -6,12 +6,9 @@ from sqlmodel import Session
 from models.user import User
 from schemas.token_schema import TokenData
 from passlib.context import CryptContext
+from config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 
 
-# Configuration JWT
-SECRET_KEY = "votre_clé_secrète_très_secrète"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 # Configuration de bcrypt
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
