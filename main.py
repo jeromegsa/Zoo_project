@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import auth, user_router
+from routers import auth, user_router, espece_router, race_router
 from database.connection import engine, create_tables, reset_db
 
 app = FastAPI()
@@ -9,8 +9,13 @@ app.include_router(auth.router)
 #inclure le routeur des utilisateurs 
 app.include_router(user_router.router)
 
-#inclure le routeur des utilisateurs 
-app.include_router(user_router.router)
+#inclure le routeur des especes
+app.include_router(espece_router.router)
+
+#inclure le routeur des races
+app.include_router(race_router.router)
+
+
 
 @app.on_event("startup")
 def on_startup():
