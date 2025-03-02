@@ -8,7 +8,7 @@ class Catalogue(SQLModel, table =True):
     nom:str=Field(default=None)
     date_creation:Optional[datetime]=Field(default=None)
     
-    animals: List["Animal"] = Relationship(back_populates="catalogue")
+    animals: List["Animal"] = Relationship(back_populates="catalogue",sa_relationship_kwargs={"cascade": "all, delete"})
 
     user_id: int =Field(foreign_key= "user.id")
     user: User = Relationship(back_populates="catalogues")  # Ajout de la relation ice
