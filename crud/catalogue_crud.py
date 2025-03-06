@@ -2,12 +2,14 @@ from sqlmodel import Session, select
 from fastapi import HTTPException
 from models import Catalogue
 from typing import  Optional
+from datetime import datetime
 
 def create_catalogue(session: Session, nom: str, user_id: int):
     """
     Crée un nouveau catalogue pour un utilisateur spécifique.
     """
-    catalogue = Catalogue(nom=nom, user_id=user_id)
+    date_creation=datetime.now()
+    catalogue = Catalogue(nom=nom, user_id=user_id, date_creation=date_creation )
     session.add(catalogue)
     session.commit()
     session.refresh(catalogue)

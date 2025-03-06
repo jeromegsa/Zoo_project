@@ -1,6 +1,7 @@
-import datetime
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional, List
+import datetime
+from fastapi import UploadFile
 
 
 class Animal(SQLModel, table=True):
@@ -11,6 +12,9 @@ class Animal(SQLModel, table=True):
     couleur:Optional[str]=Field(default= "Noire")
     regime_alimentaire:Optional[str]
     date_last_vaccin: datetime.date
+    images: List[UploadFile]  # Liste de fichiers uploadés
+
+    # date_ajout: datetime
    
     
     # Relation avec la table Espece
@@ -22,3 +26,14 @@ class Animal(SQLModel, table=True):
    
     annonces: List["Annonce"] = Relationship(back_populates="animal")
     images: List["AnimalImage"] = Relationship(back_populates="animal")
+    
+class AnimalCreate(SQLModel):
+    nom: str
+    age: int
+    poids: int
+    couleur: str
+    regime_alimentaire: str
+    date_last_vaccin: str
+    espece_id: int
+    catalogue_id: int
+    images: List[UploadFile]  # Liste de fichiers uploadés
