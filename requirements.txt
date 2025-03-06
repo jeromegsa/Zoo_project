@@ -1,6 +1,0 @@
-fastapi
-uvicorn
-sqlmodel
-mysqlclient
-python-jose
-python-multipart
