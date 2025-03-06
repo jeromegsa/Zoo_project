@@ -2,7 +2,7 @@ from sqlmodel import Session, select
 from fastapi import HTTPException, Depends, UploadFile
 from models import Animal,User
 from models import AnimalImage,Catalogue 
-from typing import Optional
+from typing import Optional, List
 from dependencies import get_current_user
 import shutil
 import os
