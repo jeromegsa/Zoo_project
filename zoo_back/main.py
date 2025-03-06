@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from routers import auth, user_router, espece_router, race_router, catalogue_router, animal_image_router, animal_router, annonce_router
 from database.connection import engine, create_tables, reset_db
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -21,7 +22,14 @@ app.include_router(animal_router.router)
 #inclure le routeur des annonce
 app.include_router(annonce_router.router)
 
-
+# Configuration CORS pour autoriser le frontend React
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # Remplace par l'URL de ton frontend si nécessaire
+    allow_credentials=True,
+    allow_methods=["*"],  # Autoriser toutes les méthodes (GET, POST, PUT, DELETE)
+    allow_headers=["*"],  # Autoriser tous les headers
+)
 
 @app.on_event("startup")
 def on_startup():

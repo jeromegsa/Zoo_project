@@ -12,6 +12,7 @@ class Annonce(SQLModel, table=True):
     user: Optional["User"] = Relationship(back_populates="annonces")
 
 
+
 # Base commune pour les Annonces
 class AnnonceBase(SQLModel):
     titre: str
