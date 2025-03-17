@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "./api/axios";
-
+import LoginPage from "./pages/login";
 function App() {
   const [users, setUsers] = useState([]);
 
@@ -9,7 +9,7 @@ function App() {
 
     api.get("/users/", {
       headers: {
-        Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzdHJpbmciLCJyb2xlIjoiYWRtaW4iLCJleHAiOjE3NDEyODM0Njl9.UgemZloFfX8QfZ_wk2alUsoAEQBbk0-44wE2mOfbBIY`,
+        Authorization: `Bearer ${token}`,
       },
     })
       .then((response) => {
@@ -22,12 +22,7 @@ function App() {
 
   return (
     <div>
-      <h1>Liste des utilisateurs</h1>
-      <ul>
-        {users.map((user) => (
-          <li key={user.id}>{user.nom} - {user.email}</li>
-        ))}
-      </ul>
+      <LoginPage></LoginPage>
     </div>
   );
 }
