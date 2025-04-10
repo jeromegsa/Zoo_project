@@ -40,7 +40,7 @@ def store(user_data : UserCreate, session : Session =Depends (get_session)):
         session.refresh(new_user)
         return new_user
     except HTTPException as e :
-        print (e)
+        print ("erreur",e)
 
 def get_users(session: Session = Depends(get_session),current_user: User=Depends(get_current_user)):
     """
