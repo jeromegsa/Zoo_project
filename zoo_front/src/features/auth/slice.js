@@ -23,6 +23,18 @@ const loginUser = createAsyncThunk(
     }
 );
 
+const fetchCurrentUser = createAsyncThunk(
+    'auth/fetchCurrentUser',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await authService.getCurrentUser();
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
 const initialState = {
     user: null,
     token: null,
@@ -51,14 +63,21 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.token = action.payload.access_token; // Modifié ici
+                state.token = action.payload.access_token;
                 state.tokenType = action.payload.token_type;
-                state.user = { username: action.meta.arg.username }; // Solution temporaire
+                state.user = { username: action.meta.arg.username };
                 state.error = null;
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.isLoading = false;
                 state.error = action.payload?.message || action.error?.message || 'Erreur de connexion';
+            })
+
+            .addCase(fetchCurrentUser.fulfilled, (state, action) => {
+                state.user = action.payload
+            })
+            .addCase(fetchCurrentUser.rejected, (state) => {
+                state.user = null; // Reset si échec
             });
     }
 });

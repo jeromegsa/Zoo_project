@@ -14,6 +14,12 @@ export const authService = {
         );
         return response.data; 
     },
+    getCurrentUser: async () => {
+        const response = await api.get('/users/auth');
+        console.log(response)
+        return response.data; // Doit retourner { id, username, email, etc. }
+      },
+    
     register: async (userData) => {
         const response = await api.post('/auth/register', userData);
         return response.data;
@@ -21,8 +27,5 @@ export const authService = {
     logout: () => {
         localStorage.removeItem('authToken');
     },
-    getCurrentUser: async () => {
-        const response = await api.get('/auth/me');
-        return response.data;
-    }
+
 };
