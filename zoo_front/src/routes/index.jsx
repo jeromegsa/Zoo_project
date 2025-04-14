@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import Login from '../pages/auth/Login';
 import Dashboard from '../pages/Dashboard';
 import Profile from '../pages/Profile';
+import SignupForm from '../pages/signUp/SignPage';
 
 // Composant de protection de route
 const ProtectedRoute = () => {
@@ -17,6 +18,7 @@ const AppRouter = () => {
     <Routes>
       {/* Route publique */}
       <Route path="/login" element={<Login />} />
+      <Route path="sign-up" element={<SignupForm/>} />
       
       {/* Routes protégées */}
       <Route element={<ProtectedRoute />}>

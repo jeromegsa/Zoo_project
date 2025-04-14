@@ -6,6 +6,7 @@ class RoleEnum (str, Enum):
     Admin="admin"
     User="user"
     Refuge="refuge"
+    Eleveur="eleveur"
 
 
 class User(SQLModel, table=True):
