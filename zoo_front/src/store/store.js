@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit'
-import authReducer from '../features/auth/slice'
+import authReducer from '../features/auth/AuthSlice'
 
 
 const authMiddleware = store => next => action => {
