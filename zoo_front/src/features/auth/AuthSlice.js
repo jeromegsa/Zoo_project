@@ -12,7 +12,7 @@ const loginUser = createAsyncThunk(
                 throw new Error('Token manquant dans la réponse');
             }
             console.log(response)
-            return response; // Renvoie la réponse brute du backend
+            return response; // 
 
         } catch (error) {
             return rejectWithValue({
