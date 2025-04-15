@@ -1,7 +1,11 @@
 import chienImage from '/images/chien_2.jpg';
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../../features/auth/AuthSlice';
+import { Link } from "react-router-dom";
 
 function SigninForm() {
+  const dispatch= useDispatch()
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -32,7 +36,18 @@ function SigninForm() {
     e.preventDefault();
     if (validateForm()) {
       setIsLoading(true);
-      setTimeout(() => setIsLoading(false), 1500);
+
+      dispatch(loginUser(formData))
+        .unwrap() // optionnel : pour utiliser les promesses facilement avec createAsyncThunk
+        .then(() => {
+          setIsLoading(false);
+          // redirection, message, reset du formulaire, etc.
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          // gestion d'erreur
+          console.error("Erreur d'inscription :", error);
+        });
     }
   };
 
@@ -161,7 +176,7 @@ function SigninForm() {
           <div className="mt-4 text-center">
             <p className="text-xs text-gray-500">
               Vous n'avez pas encore de compte ?{" "}
-              <a href="#" className="text-rose-600 hover:underline font-medium">Inscrivez-vous</a>
+              <Link to="/sign-up"className="text-rose-600 hover:underline font-medium">Inscrivez-vous</Link>
             </p>
           </div>
         </div>

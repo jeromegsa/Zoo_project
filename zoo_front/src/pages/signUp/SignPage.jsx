@@ -1,7 +1,9 @@
 import chienImage from '/images/chien_2.jpg';
 import { useState } from 'react';
 import { User, PawPrint, Building2 } from "lucide-react";
-
+import { useDispatch } from 'react-redux';
+import { registerUser } from '../../features/register/RegisterSlice'
+import { Link } from 'react-router-dom';
 const icons = {
   user: <User className="h-5 w-5 sm:h-6 sm:w-6" />,
   pawPrint: <PawPrint className="h-5 w-5 sm:h-6 sm:w-6" />,
@@ -9,6 +11,7 @@ const icons = {
 };
 
 function SignupForm() {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     username: "",
     nom: "",
@@ -40,12 +43,22 @@ function SignupForm() {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
       setIsLoading(true);
-      setTimeout(() => setIsLoading(false), 1500);
+
+      dispatch(registerUser(formData))
+        .unwrap() // optionnel : pour utiliser les promesses facilement avec createAsyncThunk
+        .then(() => {
+          setIsLoading(false);
+          // redirection, message, reset du formulaire, etc.
+        })
+        .catch((error) => {
+          setIsLoading(false);
+          // gestion d'erreur
+          console.error("Erreur d'inscription :", error);
+        });
     }
   };
 
@@ -258,6 +271,12 @@ function SignupForm() {
               {isLoading ? "Chargement..." : "Créer un compte"}
             </button>
           </form>
+        </div>
+        <div className="mt-4 text-center">
+          <p className="text-xs text-gray-500">
+            Vous avez déjà  un compte ?{" "}
+            <Link to="/login" className="text-rose-600 hover:underline font-medium">Connectez-vous</Link>
+          </p>
         </div>
       </div>
     </div>

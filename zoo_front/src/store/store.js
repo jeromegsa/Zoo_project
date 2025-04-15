@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer from '../features/auth/AuthSlice'
-
+import registerReducer from "../features/register/RegisterSlice"
 
 const authMiddleware = store => next => action => {
     // Si l'action contient notre flag
@@ -12,6 +12,7 @@ const authMiddleware = store => next => action => {
 export const store = configureStore({
     reducer: {
       auth: authReducer,
+      register: registerReducer
     },
     middleware: (getDefaultMiddleware) => 
       getDefaultMiddleware().concat(authMiddleware),
