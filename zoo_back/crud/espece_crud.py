@@ -1,6 +1,7 @@
 from sqlmodel import Session, select
 from models import Espece
 from fastapi import HTTPException
+from sqlalchemy.orm import selectinload
 
 def create_espece(session: Session, espece_data: Espece):
     """
@@ -15,10 +16,9 @@ def create_espece(session: Session, espece_data: Espece):
     return espece_data
 
 def get_especes(session: Session):
-    """
-    Récupère toutes les espèces.
-    """
-    return session.exec(select(Espece)).all()
+    statement = select(Espece).options(selectinload(Espece.races))
+    result = session.exec(statement)
+    return result.all()
 
 def get_espece_by_id(session: Session, espece_id: int):
     """

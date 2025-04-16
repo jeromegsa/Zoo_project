@@ -12,7 +12,7 @@ class Animal(SQLModel, table=True):
     couleur:Optional[str]=Field(default= "Noire")
     regime_alimentaire:Optional[str]
     date_last_vaccin: datetime.date
-    images: List[UploadFile]  # Liste de fichiers uploadés
+    race: Optional[str]
 
     # date_ajout: datetime
    
@@ -21,10 +21,8 @@ class Animal(SQLModel, table=True):
     espece_id: int = Field(foreign_key="espece.id")  # Obligatoire
     espece: Optional["Espece"] = Relationship(back_populates="animaux")  #
     
-    catalogue_id:Optional[int]=Field(default= None, foreign_key="catalogue.id")
-    catalogue: Optional["Catalogue"] = Relationship(back_populates="animals")
-   
-    annonces: List["Annonce"] = Relationship(back_populates="animal")
+    annonce_id: int = Field(foreign_key="annonce.id")
+    annonce: Optional["Annonce"] = Relationship(back_populates="animaux")
     images: List["AnimalImage"] = Relationship(back_populates="animal")
     
 class AnimalCreate(SQLModel):
@@ -35,5 +33,4 @@ class AnimalCreate(SQLModel):
     regime_alimentaire: str
     date_last_vaccin: str
     espece_id: int
-    catalogue_id: int
-    images: List[UploadFile]  # Liste de fichiers uploadés
+    images: Optional[ List[UploadFile]  ]# Liste de fichiers uploadés

@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import auth, user_router, espece_router, race_router, catalogue_router, animal_image_router, animal_router, annonce_router
+from routers import auth, user_router, espece_router, race_router, animal_image_router, animal_router, annonce_router
 from database.connection import engine, create_tables, reset_db
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -15,8 +15,7 @@ app.include_router(espece_router.router)
 
 #inclure le routeur des races
 app.include_router(race_router.router)
-#inclure le routeur des catalogues
-app.include_router(catalogue_router.router)
+
 #inclure le routeur des animals
 app.include_router(animal_router.router)
 #inclure le routeur des annonce

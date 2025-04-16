@@ -2,56 +2,62 @@ from sqlmodel import Session, select
 from fastapi import HTTPException, Depends
 import datetime
 from typing import Optional, List
-from models import Annonce, Animal, User  
-from dependencies import get_current_user  # Dépendance pour récupérer l'utilisateur connecté
+from models import Annonce, Animal, User
+from dependencies import get_current_user
+from schemas import AnimalCreate  # Schéma Pydantic pour créer des animaux
 
-def create_annonce(session: Session, titre: str, description: str, animal_id: int, current_user: User = Depends(get_current_user)):
-    """
-    Crée une nouvelle annonce pour un animal appartenant à l'utilisateur.
-    """
-    # Vérifier si l'animal existe et appartient à l'utilisateur
-    animal = session.get(Animal, animal_id)
-    if not animal:
-        raise HTTPException(status_code=404, detail="Animal non trouvé")
 
+def create_annonce(session: Session, titre: str, description: str, animaux_data: List[AnimalCreate], current_user: User = Depends(get_current_user)):
+    """
+    Crée une nouvelle annonce et associe plusieurs animaux.
+    """
     annonce = Annonce(
         titre=titre,
         description=description,
-        animal_id=animal_id,
-        user_id=current_user.id,
-        date_publication=datetime.datetime.utcnow()
+        date_publication=datetime.datetime.utcnow(),
+        user_id=current_user.id
     )
-
     session.add(annonce)
+    session.commit()
+    session.refresh(annonce)
+
+    for animal_data in animaux_data:
+        animal = Animal(**animal_data.dict(), annonce_id=annonce.id)
+        session.add(animal)
+
     session.commit()
     session.refresh(annonce)
     return annonce
 
+
 def get_annonce(session: Session, annonce_id: int):
     """
-    Récupère une annonce par son ID.
+    Récupère une annonce par son ID avec les animaux associés.
     """
-    annonce = session.get(Annonce, annonce_id)
+    annonce = session.exec(
+        select(Annonce).where(Annonce.id == annonce_id)
+    ).first()
+
     if not annonce:
         raise HTTPException(status_code=404, detail="Annonce non trouvée")
     return annonce
 
-def get_annonces(session: Session, user_id: Optional[int] = None, animal_id: Optional[int] = None):
+
+def get_annonces(session: Session, user_id: Optional[int] = None):
     """
-    Récupère toutes les annonces avec des filtres optionnels sur l'utilisateur et l'animal.
+    Récupère toutes les annonces avec des filtres optionnels sur l'utilisateur.
     """
     query = select(Annonce)
 
     if user_id:
         query = query.where(Annonce.user_id == user_id)
-    if animal_id:
-        query = query.where(Annonce.animal_id == animal_id)
 
     annonces = session.exec(query).all()
     if not annonces:
         raise HTTPException(status_code=404, detail="Aucune annonce trouvée.")
 
     return annonces
+
 
 def update_annonce(session: Session, annonce_id: int, titre: Optional[str] = None, description: Optional[str] = None, current_user: User = Depends(get_current_user)):
     """
@@ -61,7 +67,6 @@ def update_annonce(session: Session, annonce_id: int, titre: Optional[str] = Non
     if not annonce:
         raise HTTPException(status_code=404, detail="Annonce non trouvée")
 
-    # Vérification du propriétaire de l'annonce
     if annonce.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Vous n'avez pas l'autorisation de modifier cette annonce")
 
@@ -74,6 +79,7 @@ def update_annonce(session: Session, annonce_id: int, titre: Optional[str] = Non
     session.refresh(annonce)
     return annonce
 
+
 def delete_annonce(session: Session, annonce_id: int, current_user: User = Depends(get_current_user)):
     """
     Supprime une annonce si l'utilisateur en est le propriétaire.
@@ -82,7 +88,6 @@ def delete_annonce(session: Session, annonce_id: int, current_user: User = Depen
     if not annonce:
         raise HTTPException(status_code=404, detail="Annonce non trouvée")
 
-    # Vérification du propriétaire
     if annonce.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Vous n'avez pas l'autorisation de supprimer cette annonce")
 

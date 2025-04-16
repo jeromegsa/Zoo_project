@@ -17,7 +17,6 @@ class User(SQLModel, table=True):
     email: str = Field(unique=True, index=True)
     password: str=Field(default="00000000")
     localisation: str=Field(default="Cotonou")
-    catalogues: Optional[List["Catalogue"]] = Relationship(back_populates="user",sa_relationship_kwargs={"cascade": "all, delete"})
     annonces: Optional[List["Annonce"]] = Relationship(back_populates="user", sa_relationship_kwargs={"cascade":"all, delete"})
     veterinaire: Optional["Veterinaire"] = Relationship(back_populates="user", sa_relationship_kwargs={"uselist": False})
     role:RoleEnum=Field(default=RoleEnum.User)
