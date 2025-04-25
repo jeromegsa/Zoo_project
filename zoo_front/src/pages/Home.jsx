@@ -1,651 +1,562 @@
-"use client"
+
 
 import { useState } from "react"
-import { useSelector, useDispatch } from "react-redux"
-import { Link, useNavigate } from "react-router-dom"
-import { Search, Heart, PawPrint, Home, Users, Shield, ArrowRight, Menu, X, LogOut } from "lucide-react"
-import { Button } from "../components/ui/Button" 
-import { Input } from "../components/ui/Input" 
 
-import { logout } from "../features/auth/slice" 
+export default function HomePage() {
+  const [searchType, setSearchType] = useState("animals")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [animalType, setAnimalType] = useState("all")
 
-export default function PetLandingPage() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  // Gestion du slider de héros
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const heroSlides = [
+    {
+      image: "https://source.unsplash.com/random/1600x800/?dog,pet",
+      title: "Envie d'adopter un chien ?",
+      cta: "Voir nos annonces chiens",
+      links: ["Les chiots à vendre", "Les chiens à adopter"],
+    },
+    {
+      image: "https://source.unsplash.com/random/1600x800/?cat,kitten",
+      title: "Envie d'adopter un chat ?",
+      cta: "Voir nos annonces chats",
+      links: ["Les chatons à vendre", "Les chats à adopter"],
+    },
+    {
+      image: "https://source.unsplash.com/random/1600x800/?rabbit,pet",
+      title: "Envie d'adopter un NAC ?",
+      cta: "Voir nos annonces NAC",
+      links: ["Les NAC à vendre", "Les NAC à adopter"],
+    },
+  ]
 
-  // Récupérer l'état d'authentification et les informations utilisateur depuis Redux
-  const { isAuthenticated, user } = useSelector((state) => state.auth)
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-
-  // Fonction pour gérer la déconnexion
-  const handleLogout = () => {
-    dispatch(logout())
-    // Rediriger vers la page d'accueil ou de connexion après déconnexion
-    navigate("/")
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev === heroSlides.length - 1 ? 0 : prev + 1))
   }
 
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? heroSlides.length - 1 : prev - 1))
+  }
+
+  // Données pour les catégories d'animaux
+  const animalCategories = [
+    { name: "Chiens", icon: dogIcon },
+    { name: "Chats", icon: catIcon },
+    { name: "Chevaux", icon: horseIcon },
+    { name: "Poissons", icon: fishIcon },
+    { name: "Oiseaux", icon: birdIcon },
+    { name: "Rongeurs", icon: rodentIcon },
+    { name: "NAC", icon: nacIcon },
+    { name: "Par Région", icon: mapIcon },
+  ]
+
+  // Données pour les annonces d'animaux
+  const petListings = [
+    {
+      id: 1,
+      image: "https://source.unsplash.com/random/300x300/?dog,puppy",
+      title: "Chiot Berger Australien LOF",
+      price: "1 200 €",
+      location: "Lyon, Rhône",
+      date: "Aujourd'hui, 10:45",
+    },
+    {
+      id: 2,
+      image: "https://source.unsplash.com/random/300x300/?cat,kitten",
+      title: "Chaton Maine Coon pure race",
+      price: "950 €",
+      location: "Paris, Île-de-France",
+      date: "Hier, 18:30",
+    },
+    {
+      id: 3,
+      image: "https://source.unsplash.com/random/300x300/?rabbit",
+      title: "Lapin nain à adopter",
+      price: "Adoption",
+      location: "Marseille, Bouches-du-Rhône",
+      date: "Il y a 2 jours",
+    },
+    {
+      id: 4,
+      image: "https://source.unsplash.com/random/300x300/?parrot",
+      title: "Perroquet Gris du Gabon",
+      price: "800 €",
+      location: "Toulouse, Haute-Garonne",
+      date: "Il y a 3 jours",
+    },
+  ]
+
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <PawPrint className="h-6 w-6 text-rose-500" />
-            <span className="text-xl font-bold">PetConnect</span>
+      <header className="bg-white shadow-sm">
+        <div className="container mx-auto px-4">
+          {/* Top navigation */}
+          <div className="flex justify-end py-2 text-sm">
+            <a href="#" className="text-gray-600 hover:text-rose-600 mr-4">
+              Annuaire des élevages
+            </a>
+            <a href="#" className="text-gray-600 hover:text-rose-600 mr-4">
+              Annuaire des services
+            </a>
+            <a href="#" className="text-rose-600 hover:text-rose-700 font-medium">
+              <span className="inline-block mr-1">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
+                </svg>
+              </span>
+              Connexion
+            </a>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-sm font-medium transition-colors hover:text-primary">
-              Accueil
-            </Link>
-            <Link
-              to="/search"
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+          {/* Main navigation */}
+          <div className="flex items-center justify-between py-4">
+            <a href="#" className="flex items-center">
+              <span className="text-2xl font-bold text-gray-800">
+                <span className="text-rose-600">UN</span>COMPAGNON
+                <span className="text-rose-600">.fr</span>
+              </span>
+            </a>
+
+            <div className="hidden md:flex items-center space-x-8">
+              {animalCategories.map((category, index) => (
+                <a key={index} href="#" className="flex flex-col items-center text-gray-700 hover:text-rose-600 group">
+                  <div className="w-8 h-8 mb-1 text-gray-500 group-hover:text-rose-600">{category.icon}</div>
+                  <span className="text-xs font-medium">{category.name}</span>
+                </a>
+              ))}
+            </div>
+
+            <a
+              href="#"
+              className="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
             >
-              Trouver un animal
-            </Link>
-
-            {isAuthenticated ? (
-              <>
-                <Link
-                  to="/post"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                >
-                  Déposer une annonce
-                </Link>
-                <Link
-                  to="/favorites"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                >
-                  Mes favoris
-                </Link>
-                <Link
-                  to="/messages"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                >
-                  Messages
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link
-                  to="/shelters"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                >
-                  Refuges
-                </Link>
-                <Link
-                  to="/about"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                >
-                  À propos
-                </Link>
-              </>
-            )}
-          </nav>
-
-          <div className="hidden md:flex items-center gap-4">
-            {isAuthenticated ? (
-              <>
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-full bg-muted overflow-hidden">
-                    {user?.profileImage ? (
-                      <img
-                        src={user.profileImage || "/placeholder.svg"}
-                        alt={user.name}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="h-full w-full flex items-center justify-center bg-rose-100 text-rose-500">
-                        {user?.name?.charAt(0) || "U"}
-                      </div>
-                    )}
-                  </div>
-                  <span className="text-sm font-medium">{user?.name || "Utilisateur"}</span>
-                </div>
-                <Button variant="outline" size="sm" onClick={handleLogout}>
-                  <LogOut className="h-4 w-4 mr-2" />
-                  Déconnexion
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button variant="outline" size="sm" onClick={() => navigate("/login")}>
-                  Se connecter
-                </Button>
-                <Button size="sm" onClick={() => navigate("/register")}>
-                  S'inscrire
-                </Button>
-              </>
-            )}
+              Déposer une annonce
+            </a>
           </div>
-
-          {/* Mobile Menu Button */}
-          <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
         </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden border-t p-4">
-            <nav className="flex flex-col space-y-4">
-              <Link to="/" className="text-sm font-medium transition-colors hover:text-primary">
-                Accueil
-              </Link>
-              <Link
-                to="/search"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-              >
-                Trouver un animal
-              </Link>
-
-              {isAuthenticated ? (
-                <>
-                  <Link
-                    to="/post"
-                    className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                  >
-                    Déposer une annonce
-                  </Link>
-                  <Link
-                    to="/favorites"
-                    className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                  >
-                    Mes favoris
-                  </Link>
-                  <Link
-                    to="/messages"
-                    className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                  >
-                    Messages
-                  </Link>
-                  <div className="flex items-center gap-2 pt-2">
-                    <div className="h-8 w-8 rounded-full bg-muted overflow-hidden">
-                      {user?.profileImage ? (
-                        <img
-                          src={user.profileImage || "/placeholder.svg"}
-                          alt={user.name}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="h-full w-full flex items-center justify-center bg-rose-100 text-rose-500">
-                          {user?.name?.charAt(0) || "U"}
-                        </div>
-                      )}
-                    </div>
-                    <span className="text-sm font-medium">{user?.name || "Utilisateur"}</span>
-                  </div>
-                  <Button variant="outline" size="sm" className="mt-2" onClick={handleLogout}>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Déconnexion
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link
-                    to="/shelters"
-                    className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                  >
-                    Refuges
-                  </Link>
-                  <Link
-                    to="/about"
-                    className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-                  >
-                    À propos
-                  </Link>
-                  <div className="flex flex-col gap-2 pt-2">
-                    <Button variant="outline" size="sm" className="w-full" onClick={() => navigate("/login")}>
-                      Se connecter
-                    </Button>
-                    <Button size="sm" className="w-full" onClick={() => navigate("/register")}>
-                      S'inscrire
-                    </Button>
-                  </div>
-                </>
-              )}
-            </nav>
-          </div>
-        )}
       </header>
 
-      <main className="flex-1">
-        {/* Hero Section - Différent selon l'état d'authentification */}
-        <section className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-rose-500/20 to-amber-500/20 z-0" />
-          <div className="container relative z-10 py-16 md:py-24 lg:py-32">
-            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                    {isAuthenticated
-                      ? `Bonjour, ${user?.name || "ami des animaux"}!`
-                      : "Trouvez l'animal qui vous correspond"}
-                  </h1>
-                  <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    {isAuthenticated
-                      ? "Continuez votre recherche ou partagez votre animal avec notre communauté."
-                      : "Connectez-vous avec des éleveurs, des refuges et des propriétaires pour adopter l'animal de vos rêves."}
-                  </p>
+      {/* Hero Section */}
+      <section className="relative h-[500px] overflow-hidden">
+        {/* Slider */}
+        <div className="relative h-full">
+          {heroSlides.map((slide, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                index === currentSlide ? "opacity-100" : "opacity-0 pointer-events-none"
+              }`}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent z-10"></div>
+              <img src={slide.image || "/placeholder.svg"} alt={slide.title} className="w-full h-full object-cover" />
+              <div className="absolute top-1/2 right-20 transform -translate-y-1/2 z-20 text-right">
+                <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">{slide.title}</h1>
+                <a
+                  href="#"
+                  className="inline-block bg-rose-600 hover:bg-rose-700 text-white px-6 py-3 rounded-md font-medium transition-colors"
+                >
+                  {slide.cta}
+                </a>
+                <div className="mt-4 text-white">
+                  {slide.links.map((link, i) => (
+                    <a key={i} href="#" className="text-white hover:text-rose-300 text-sm mr-4 underline">
+                      {link}
+                    </a>
+                  ))}
                 </div>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button size="lg" className="bg-rose-500 hover:bg-rose-600" onClick={() => navigate("/search")}>
-                    Trouver un animal <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                  {isAuthenticated ? (
-                    <Button size="lg" variant="outline" onClick={() => navigate("/post")}>
-                      Déposer une annonce
-                    </Button>
-                  ) : (
-                    <Button size="lg" variant="outline" onClick={() => navigate("/register")}>
-                      Rejoindre la communauté
-                    </Button>
-                  )}
-                </div>
-                {!isAuthenticated && (
-                  <div className="mt-4 flex items-center">
-                    <div className="flex -space-x-2">
-                      {[1, 2, 3, 4].map((i) => (
-                        <div
-                          key={i}
-                          className="inline-block h-8 w-8 rounded-full border-2 border-background overflow-hidden"
-                        >
-                          <img
-                            src={`/placeholder.svg?height=32&width=32`}
-                            alt="User"
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    <span className="ml-2 text-sm text-muted-foreground">Rejoignez +10,000 amoureux d'animaux</span>
-                  </div>
-                )}
               </div>
-              <div className="relative mx-auto w-full max-w-md lg:max-w-none">
-                <div className="aspect-[4/3] overflow-hidden rounded-xl">
+            </div>
+          ))}
+
+          {/* Navigation arrows */}
+          <button
+            onClick={prevSlide}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 z-30 bg-white/20 hover:bg-white/40 rounded-full p-2 text-white transition-colors"
+            aria-label="Précédent"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            onClick={nextSlide}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 z-30 bg-white/20 hover:bg-white/40 rounded-full p-2 text-white transition-colors"
+            aria-label="Suivant"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      {/* Search Section */}
+      <section className="py-8">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md p-6">
+            <div className="flex space-x-6 mb-4">
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="searchType"
+                  checked={searchType === "animals"}
+                  onChange={() => setSearchType("animals")}
+                  className="h-4 w-4 text-rose-600 focus:ring-rose-500"
+                />
+                <span className="ml-2 text-gray-700">Annonces animaux</span>
+              </label>
+              <label className="flex items-center cursor-pointer">
+                <input
+                  type="radio"
+                  name="searchType"
+                  checked={searchType === "services"}
+                  onChange={() => setSearchType("services")}
+                  className="h-4 w-4 text-rose-600 focus:ring-rose-500"
+                />
+                <span className="ml-2 text-gray-700">Annonces services</span>
+              </label>
+            </div>
+
+            <div className="flex">
+              <div className="w-1/3 mr-2">
+                <select
+                  value={animalType}
+                  onChange={(e) => setAnimalType(e.target.value)}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                >
+                  <option value="all">Animaux</option>
+                  <option value="dogs">Chiens</option>
+                  <option value="cats">Chats</option>
+                  <option value="horses">Chevaux</option>
+                  <option value="fish">Poissons</option>
+                  <option value="birds">Oiseaux</option>
+                  <option value="rodents">Rongeurs</option>
+                  <option value="nac">NAC</option>
+                </select>
+              </div>
+              <div className="w-2/3 flex">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Saisissez une ville et un rayon"
+                  className="flex-1 border border-gray-300 rounded-l-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                />
+                <button className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-r-md transition-colors">
+                  Rechercher
+                </button>
+              </div>
+            </div>
+
+            <div className="flex justify-between mt-3 text-sm">
+              <button className="text-gray-500 hover:text-rose-600">Effacer la recherche</button>
+              <button className="text-gray-500 hover:text-rose-600 flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 mr-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                  />
+                </svg>
+                Plus de filtres
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Listings Section */}
+      <section className="py-8">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Petites annonces d'animaux contrôlées</h2>
+          <p className="text-gray-600 mb-6">
+            Vous souhaitez adopter des chatons ? Acheter un chien ? Vous recherchez des chiots ou d'autres animaux ?
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {petListings.map((listing) => (
+              <a
+                key={listing.id}
+                href="#"
+                className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+              >
+                <div className="h-48 overflow-hidden">
                   <img
-                    src="/placeholder.svg?height=600&width=800"
-                    alt="Happy pets and owners"
-                    className="h-full w-full object-cover"
+                    src={listing.image || "/placeholder.svg"}
+                    alt={listing.title}
+                    className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
                   />
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Search Section */}
-        <section className="bg-muted py-12">
-          <div className="container">
-            <div className="mx-auto max-w-3xl rounded-xl bg-background p-6 shadow-lg">
-              <h2 className="mb-6 text-center text-2xl font-bold">Rechercher un animal</h2>
-              <div className="grid gap-4 md:grid-cols-4">
-                <div className="md:col-span-2">
-                  <Input placeholder="Chien, chat, lapin..." />
-                </div>
-                <div>
-                  <select className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
-                    <option value="">Type d'animal</option>
-                    <option value="dog">Chien</option>
-                    <option value="cat">Chat</option>
-                    <option value="bird">Oiseau</option>
-                    <option value="rabbit">Lapin</option>
-                    <option value="other">Autre</option>
-                  </select>
-                </div>
-                <div>
-                  <Button className="w-full bg-rose-500 hover:bg-rose-600" onClick={() => navigate("/search")}>
-                    <Search className="mr-2 h-4 w-4" /> Rechercher
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Categories Section */}
-        <section className="py-16 md:py-24">
-          <div className="container">
-            <div className="mb-12 text-center">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Découvrez par catégorie</h2>
-              <p className="mt-4 text-muted-foreground md:text-xl">Explorez notre sélection d'animaux par catégorie</p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {[
-                { name: "Chiens", icon: "🐕", path: "/search?type=dog" },
-                { name: "Chats", icon: "🐈", path: "/search?type=cat" },
-                { name: "Oiseaux", icon: "🦜", path: "/search?type=bird" },
-                { name: "Rongeurs", icon: "🐹", path: "/search?type=rodent" },
-                { name: "Reptiles", icon: "🦎", path: "/search?type=reptile" },
-                { name: "Poissons", icon: "🐠", path: "/search?type=fish" },
-                { name: "Animaux de ferme", icon: "🐄", path: "/search?type=farm" },
-                { name: "Autres", icon: "🦔", path: "/search?type=other" },
-              ].map((category, index) => (
-                <Link
-                  to={category.path}
-                  key={index}
-                  className="flex flex-col items-center justify-center rounded-xl border bg-card p-6 text-card-foreground shadow-sm transition-all hover:shadow-md hover:border-rose-200"
-                >
-                  <span className="text-4xl mb-2">{category.icon}</span>
-                  <h3 className="font-medium">{category.name}</h3>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* How It Works - Différent selon l'état d'authentification */}
-        <section className="bg-muted py-16 md:py-24">
-          <div className="container">
-            <div className="mb-12 text-center">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Comment ça marche</h2>
-              <p className="mt-4 text-muted-foreground md:text-xl">
-                {isAuthenticated
-                  ? "Profitez pleinement de notre plateforme en quelques étapes simples"
-                  : "Trouvez facilement votre compagnon idéal en quelques étapes simples"}
-              </p>
-            </div>
-            <div className="grid gap-8 md:grid-cols-3">
-              {isAuthenticated
-                ? // Étapes pour les utilisateurs connectés
-                  [
-                    {
-                      icon: <Search className="h-10 w-10 text-rose-500" />,
-                      title: "Explorez",
-                      description: "Parcourez notre large sélection d'animaux avec des filtres personnalisés.",
-                    },
-                    {
-                      icon: <Heart className="h-10 w-10 text-rose-500" />,
-                      title: "Enregistrez",
-                      description: "Ajoutez vos favoris et recevez des notifications pour les nouvelles annonces.",
-                    },
-                    {
-                      icon: <Home className="h-10 w-10 text-rose-500" />,
-                      title: "Contactez",
-                      description: "Discutez directement avec les propriétaires ou refuges via notre messagerie.",
-                    },
-                  ].map((step, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col items-center rounded-xl bg-background p-6 text-center shadow-sm"
-                    >
-                      <div className="mb-4 rounded-full bg-rose-100 p-3">{step.icon}</div>
-                      <h3 className="mb-2 text-xl font-bold">{step.title}</h3>
-                      <p className="text-muted-foreground">{step.description}</p>
-                    </div>
-                  ))
-                : // Étapes pour les visiteurs non connectés
-                  [
-                    {
-                      icon: <Search className="h-10 w-10 text-rose-500" />,
-                      title: "Recherchez",
-                      description: "Parcourez notre large sélection d'animaux disponibles à l'adoption ou à l'achat.",
-                    },
-                    {
-                      icon: <Heart className="h-10 w-10 text-rose-500" />,
-                      title: "Connectez-vous",
-                      description: "Entrez en contact avec des éleveurs, des refuges ou des propriétaires.",
-                    },
-                    {
-                      icon: <Home className="h-10 w-10 text-rose-500" />,
-                      title: "Accueillez",
-                      description: "Rencontrez votre nouvel ami et accueillez-le dans votre foyer.",
-                    },
-                  ].map((step, index) => (
-                    <div
-                      key={index}
-                      className="flex flex-col items-center rounded-xl bg-background p-6 text-center shadow-sm"
-                    >
-                      <div className="mb-4 rounded-full bg-rose-100 p-3">{step.icon}</div>
-                      <h3 className="mb-2 text-xl font-bold">{step.title}</h3>
-                      <p className="text-muted-foreground">{step.description}</p>
-                    </div>
-                  ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Featured Pets */}
-        <section className="py-16 md:py-24">
-          <div className="container">
-            <div className="mb-12 text-center">
-              <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Animaux à l'honneur</h2>
-              <p className="mt-4 text-muted-foreground md:text-xl">
-                Ces adorables compagnons cherchent un nouveau foyer
-              </p>
-            </div>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {[1, 2, 3, 4].map((pet) => (
-                <div
-                  key={pet}
-                  className="group overflow-hidden rounded-xl border bg-background shadow-sm transition-all hover:shadow-md"
-                >
-                  <div className="aspect-square overflow-hidden">
-                    <img
-                      src={`/placeholder.svg?height=300&width=300`}
-                      alt="Pet"
-                      className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-bold">Max</h3>
-                      <span className="text-sm text-muted-foreground">2 ans</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">Labrador Retriever</p>
-                    <div className="mt-4 flex items-center justify-between">
-                      <span className="font-medium text-rose-500">Paris, France</span>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="rounded-full"
-                        onClick={() => {
-                          if (isAuthenticated) {
-                            // Action pour ajouter aux favoris
-                            // dispatch(addToFavorites(pet))
-                          } else {
-                            navigate("/login")
-                          }
-                        }}
-                      >
-                        <Heart className="h-4 w-4" />
-                      </Button>
-                    </div>
+                <div className="p-4">
+                  <h3 className="font-medium text-gray-800 mb-1">{listing.title}</h3>
+                  <p className="text-rose-600 font-bold mb-2">{listing.price}</p>
+                  <div className="flex justify-between text-sm text-gray-500">
+                    <span>{listing.location}</span>
+                    <span>{listing.date}</span>
                   </div>
                 </div>
-              ))}
-            </div>
-            <div className="mt-10 text-center">
-              <Button size="lg" variant="outline" onClick={() => navigate("/search")}>
-                Voir plus d'animaux
-              </Button>
-            </div>
+              </a>
+            ))}
           </div>
-        </section>
 
-        {/* CTA Section - Différent selon l'état d'authentification */}
-        <section className="py-16 md:py-24">
-          <div className="container">
-            <div className="rounded-2xl bg-gradient-to-r from-rose-500 to-amber-500 p-8 md:p-12 shadow-xl">
-              <div className="grid gap-6 md:grid-cols-2 md:gap-12 items-center">
-                <div>
-                  <h2 className="text-3xl font-bold tracking-tighter text-white sm:text-4xl md:text-5xl">
-                    {isAuthenticated ? "Vous avez un animal à proposer ?" : "Prêt à trouver votre compagnon idéal?"}
-                  </h2>
-                  <p className="mt-4 text-white/90 md:text-xl">
-                    {isAuthenticated
-                      ? "Partagez votre annonce avec notre communauté et trouvez le foyer parfait pour votre animal."
-                      : "Rejoignez notre communauté et connectez-vous avec des milliers d'animaux cherchant un foyer aimant."}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-4 md:items-end">
-                  {isAuthenticated ? (
-                    <>
-                      <Button
-                        size="lg"
-                        className="w-full md:w-auto bg-white text-rose-500 hover:bg-white/90"
-                        onClick={() => navigate("/post")}
-                      >
-                        Déposer une annonce
-                      </Button>
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        className="w-full md:w-auto border-white text-white hover:bg-white/10"
-                        onClick={() => navigate("/my-posts")}
-                      >
-                        Gérer mes annonces
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button
-                        size="lg"
-                        className="w-full md:w-auto bg-white text-rose-500 hover:bg-white/90"
-                        onClick={() => navigate("/register")}
-                      >
-                        Créer un compte gratuitement
-                      </Button>
-                      <Button
-                        size="lg"
-                        variant="outline"
-                        className="w-full md:w-auto border-white text-white hover:bg-white/10"
-                        onClick={() => navigate("/about")}
-                      >
-                        En savoir plus
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
+          <div className="text-center mt-8">
+            <a
+              href="#"
+              className="inline-block bg-rose-600 hover:bg-rose-700 text-white px-6 py-3 rounded-md font-medium transition-colors"
+            >
+              Voir toutes les annonces
+            </a>
           </div>
-        </section>
-
-        {/* Trust Badges */}
-        <section className="border-t py-12">
-          <div className="container">
-            <div className="grid gap-8 md:grid-cols-3">
-              {[
-                {
-                  icon: <Shield className="h-8 w-8 text-rose-500" />,
-                  title: "Sécurité garantie",
-                  description: "Toutes les annonces sont vérifiées par notre équipe pour assurer leur légitimité.",
-                },
-                {
-                  icon: <Users className="h-8 w-8 text-rose-500" />,
-                  title: "Communauté engagée",
-                  description: "Rejoignez des milliers d'amoureux des animaux partageant les mêmes valeurs.",
-                },
-                {
-                  icon: <PawPrint className="h-8 w-8 text-rose-500" />,
-                  title: "Bien-être animal",
-                  description: "Nous promouvons l'adoption responsable et le bien-être des animaux.",
-                },
-              ].map((badge, index) => (
-                <div key={index} className="flex items-start gap-4">
-                  {badge.icon}
-                  <div>
-                    <h3 className="font-bold">{badge.title}</h3>
-                    <p className="text-sm text-muted-foreground">{badge.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Newsletter - Seulement pour les utilisateurs non connectés */}
-        {!isAuthenticated && (
-          <section className="bg-muted py-12">
-            <div className="container">
-              <div className="mx-auto max-w-2xl text-center">
-                <h2 className="text-2xl font-bold">Restez informé</h2>
-                <p className="mt-2 text-muted-foreground">
-                  Inscrivez-vous à notre newsletter pour recevoir les dernières annonces et conseils
-                </p>
-                <div className="mt-6 flex gap-2">
-                  <Input placeholder="Votre adresse email" className="max-w-lg flex-1" />
-                  <Button>S'inscrire</Button>
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-      </main>
+        </div>
+      </section>
 
       {/* Footer */}
-      <footer className="border-t bg-background">
-        <div className="container py-12">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+      <footer className="bg-gray-800 text-white py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center gap-2">
-                <PawPrint className="h-6 w-6 text-rose-500" />
-                <span className="text-xl font-bold">PetConnect</span>
-              </div>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Connecter les amoureux d'animaux avec leurs compagnons idéaux.
+              <h3 className="text-lg font-bold mb-4">À propos</h3>
+              <p className="text-gray-400 mb-4">
+                UnCompagnon.fr est le site de référence pour l'adoption et l'achat d'animaux de compagnie en France.
               </p>
-              <div className="mt-4 flex gap-4">
-                {["twitter", "facebook", "instagram", "youtube"].map((social) => (
-                  <Link
-                    key={social}
-                    to="#"
-                    className="rounded-full bg-muted p-2 text-muted-foreground hover:text-foreground"
-                  >
-                    <span className="sr-only">{social}</span>
-                    <div className="h-5 w-5" />
-                  </Link>
-                ))}
+              <div className="flex space-x-4">
+                <a href="#" className="text-gray-400 hover:text-white">
+                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fillRule="evenodd"
+                      d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white">
+                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fillRule="evenodd"
+                      d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white">
+                  <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                  </svg>
+                </a>
               </div>
             </div>
+
             <div>
-              <h3 className="mb-4 text-sm font-medium">Liens rapides</h3>
-              <ul className="grid gap-3">
-                {["Accueil", "Rechercher", "Déposer une annonce", "Refuges", "Éleveurs"].map((link) => (
-                  <li key={link}>
-                    <Link to="#" className="text-sm text-muted-foreground hover:text-foreground">
-                      {link}
-                    </Link>
-                  </li>
-                ))}
+              <h3 className="text-lg font-bold mb-4">Liens rapides</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Accueil
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Déposer une annonce
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Rechercher un animal
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Annuaire des élevages
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Annuaire des services
+                  </a>
+                </li>
               </ul>
             </div>
+
             <div>
-              <h3 className="mb-4 text-sm font-medium">Ressources</h3>
-              <ul className="grid gap-3">
-                {["Guide d'adoption", "Conseils vétérinaires", "FAQ", "Blog", "Témoignages"].map((link) => (
-                  <li key={link}>
-                    <Link to="#" className="text-sm text-muted-foreground hover:text-foreground">
-                      {link}
-                    </Link>
-                  </li>
-                ))}
+              <h3 className="text-lg font-bold mb-4">Catégories</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Chiens
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Chats
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Chevaux
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Poissons
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Oiseaux
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    Rongeurs
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-400 hover:text-white">
+                    NAC
+                  </a>
+                </li>
               </ul>
             </div>
+
             <div>
-              <h3 className="mb-4 text-sm font-medium">Légal</h3>
-              <ul className="grid gap-3">
-                {["Conditions d'utilisation", "Politique de confidentialité", "Cookies", "Mentions légales"].map(
-                  (link) => (
-                    <li key={link}>
-                      <Link to="#" className="text-sm text-muted-foreground hover:text-foreground">
-                        {link}
-                      </Link>
-                    </li>
-                  ),
-                )}
-              </ul>
+              <h3 className="text-lg font-bold mb-4">Contact</h3>
+              <p className="text-gray-400 mb-4">Vous avez des questions ? N'hésitez pas à nous contacter.</p>
+              <a
+                href="#"
+                className="inline-block bg-rose-600 hover:bg-rose-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+              >
+                Nous contacter
+              </a>
             </div>
           </div>
-          <div className="mt-12 border-t pt-6 text-center text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} PetConnect. Tous droits réservés.
+
+          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
+            <p>© {new Date().getFullYear()} UnCompagnon.fr - Tous droits réservés</p>
           </div>
         </div>
       </footer>
     </div>
   )
 }
+
+// Icônes SVG pour les catégories d'animaux
+const dogIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M14 10h.01M8 10h.01M17.5 15a2.5 2.5 0 01-2.5 2.5h-6a2.5 2.5 0 01-2.5-2.5m9.5-7.5a2.5 2.5 0 00-2.5-2.5h-9a2.5 2.5 0 00-2.5 2.5v9a2.5 2.5 0 002.5 2.5h9a2.5 2.5 0 002.5-2.5v-9z"
+    />
+  </svg>
+)
+
+const catIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 14l9-5-9-5-9 5 9 5z" />
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
+    />
+  </svg>
+)
+
+const horseIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+    />
+  </svg>
+)
+
+const fishIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+    />
+  </svg>
+)
+
+const birdIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76"
+    />
+  </svg>
+)
+
+const rodentIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+    />
+  </svg>
+)
+
+const nacIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+    />
+  </svg>
+)
+
+const mapIcon = (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+    />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+  </svg>
+)

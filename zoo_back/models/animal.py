@@ -31,6 +31,7 @@ class AnimalCreate(SQLModel):
     poids: int
     couleur: str
     regime_alimentaire: str
+    race: str
     date_last_vaccin: str
     espece_id: int
     images: Optional[ List[UploadFile]  ]# Liste de fichiers uploadés

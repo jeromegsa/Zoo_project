@@ -2,16 +2,19 @@ import chienImage from '/images/chien_2.jpg';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginUser } from '../../features/auth/AuthSlice';
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+
 
 function SigninForm() {
-  const dispatch= useDispatch()
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
 
   const [errors, setErrors] = useState({});
+  const [authError, setAuthError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -19,7 +22,7 @@ function SigninForm() {
     const newErrors = {};
     if (formData.username.length < 3) newErrors.username = "Le nom d'utilisateur doit contenir au moins 3 caractères.";
     if (formData.password.length < 8) newErrors.password = "Le mot de passe doit contenir au moins 8 caractères.";
-    
+
     // Suppression des validations pour les champs qui n'existent pas dans ce formulaire
     // (nom, prenom, email, localisation étaient validés mais absents du formulaire)
 
@@ -41,12 +44,13 @@ function SigninForm() {
         .unwrap() // optionnel : pour utiliser les promesses facilement avec createAsyncThunk
         .then(() => {
           setIsLoading(false);
-          // redirection, message, reset du formulaire, etc.
+          navigate(("/"))
+
         })
         .catch((error) => {
           setIsLoading(false);
-          // gestion d'erreur
-          console.error("Erreur d'inscription :", error);
+          const message = error?.message || "Une erreur s’est produite. Veuillez réessayer.";
+          setAuthError(message);
         });
     }
   };
@@ -119,7 +123,11 @@ function SigninForm() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-3">
-            <div>
+            {authError && (
+              <div className="bg-red-100 text-red-700 px-3 py-2 rounded text-xs sm:text-sm">
+                {authError}
+              </div>
+            )}            <div>
               <label htmlFor="username" className="block text-xs font-medium mb-1">Nom d'utilisateur</label>
               <input
                 id="username"
@@ -176,7 +184,7 @@ function SigninForm() {
           <div className="mt-4 text-center">
             <p className="text-xs text-gray-500">
               Vous n'avez pas encore de compte ?{" "}
-              <Link to="/sign-up"className="text-rose-600 hover:underline font-medium">Inscrivez-vous</Link>
+              <Link to="/sign-up" className="text-rose-600 hover:underline font-medium">Inscrivez-vous</Link>
             </p>
           </div>
         </div>

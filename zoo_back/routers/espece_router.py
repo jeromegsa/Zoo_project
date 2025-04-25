@@ -10,7 +10,7 @@ router = APIRouter(tags=["Especes"])
 def create_espece_route(espece_data: Espece, session: Session = Depends(get_session)):
     return create_espece(session, espece_data)
 
-@router.get("/especes/", response_model=list[Espece])
+@router.get("/especes/")
 def get_especes_route(session: Session = Depends(get_session)):
     return get_especes(session)
 
