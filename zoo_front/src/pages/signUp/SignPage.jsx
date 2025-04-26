@@ -2,7 +2,7 @@ import chienImage from '/images/chien_2.jpg';
 import { useState } from 'react';
 import { User, PawPrint, Building2 } from "lucide-react";
 import { useDispatch } from 'react-redux';
-import { registerUser } from '../../features/register/RegisterSlice'
+import { registerUser } from '../../features/user/UserSlice'; 
 import { Link } from 'react-router-dom';
 const icons = {
   user: <User className="h-5 w-5 sm:h-6 sm:w-6" />,

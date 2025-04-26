@@ -11,7 +11,6 @@ class AnimalCreate(BaseModel):
     regime_alimentaire: str
     date_last_vaccin: str
     espece_id: int
-    images: Optional[List[UploadFile]] 
-
+    images: Optional[List[str]] = None
     class Config:
         arbitrary_types_allowed = True

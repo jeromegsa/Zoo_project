@@ -13,7 +13,7 @@ function App() {
       localStorage.removeItem("token_expiration");
       navigate('/login');
     }
-  }, []);
+  }, [navigate]);
   return (
     <div className="app">
       <AppRouter />

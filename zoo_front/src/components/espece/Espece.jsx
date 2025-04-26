@@ -1,22 +1,29 @@
-import { useEffect } from "react"
-import { useSelector, useDispatch } from "react-redux"
-import { fetchEspeces } from "../../features/espece/EspeceSlice"
-export default function Espece() {
-    const dispatch = useDispatch()
-    const especes = useSelector(state => state.especes)
-    const { espece, isLoading, error } = useSelector((state) => state.especes)
-    useEffect(() => {
-        dispatch(fetchEspeces())
-    }, [dispatch])
+import React, { useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { fetchAnnonces } from "../../features/annonce/AnnonceSlice" 
 
-    if (isLoading) return <p>Chargement...</p>
-    if (error) return <p> Erreur : {error}</p>
-    return (
-        <ul>
-            {espece?.map((e) => {
+export default function AnnonceList() {
+  const dispatch = useDispatch()
 
-                <li key={e.id}> {e.nom}</li>
-            })}
-        </ul>
-    )
+  const { annonces, isLoading, error } = useSelector(state => state.annonces)
+
+  useEffect(() => {
+    dispatch(fetchAnnonces())
+  }, [dispatch])
+
+  if (isLoading) return <p>Chargement des annonces...</p>
+  if (error) return <p>Erreur : {error}</p>
+
+  return (
+    <div className="annonces">
+      <h2>Liste des annonces</h2>
+      <ul>
+        {annonces && annonces.map((annonce) => (
+          <li key={annonce.id}>
+            <strong>{annonce.titre}</strong> - {annonce.description}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
 }

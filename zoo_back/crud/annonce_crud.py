@@ -2,14 +2,15 @@ from sqlmodel import Session, select
 from fastapi import HTTPException, Depends
 import datetime
 from typing import Optional, List
-from models import Annonce, Animal, User
+from models import Annonce, Animal, User, AnimalImage
 from dependencies import get_current_user
 from schemas import AnimalCreate  # Schéma Pydantic pour créer des animaux
 
 
+
 def create_annonce(session: Session, titre: str, description: str, animaux_data: List[AnimalCreate], current_user: User = Depends(get_current_user)):
     """
-    Crée une nouvelle annonce et associe plusieurs animaux.
+    Crée une nouvelle annonce et associe plusieurs animaux avec leurs images.
     """
     annonce = Annonce(
         titre=titre,
@@ -22,12 +23,35 @@ def create_annonce(session: Session, titre: str, description: str, animaux_data:
     session.refresh(annonce)
 
     for animal_data in animaux_data:
-        animal = Animal(**animal_data.dict(), annonce_id=annonce.id)
+        # Création de l'animal
+        animal = Animal(
+            nom=animal_data.nom,
+            age=animal_data.age,
+            poids=animal_data.poids,
+            couleur=animal_data.couleur,
+            regime_alimentaire=animal_data.regime_alimentaire,
+            date_last_vaccin=animal_data.date_last_vaccin,
+            espece_id=animal_data.espece_id,
+            race=animal_data.race,
+            annonce_id=annonce.id
+        )
         session.add(animal)
+        session.commit()
+        session.refresh(animal)
+
+        # Ajout des images associées
+        if animal_data.images:
+            for image_url in animal_data.images:
+                image_record = AnimalImage(
+                    url=image_url,
+                    animal_id=animal.id
+                )
+                session.add(image_record)
 
     session.commit()
     session.refresh(annonce)
     return annonce
+
 
 
 def get_annonce(session: Session, annonce_id: int):
