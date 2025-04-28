@@ -1,8 +1,7 @@
 from sqlmodel import Session, select
-from fastapi import HTTPException, Depends, UploadFile
-from models import Animal, User, AnimalImage
+from fastapi import HTTPException
+from models import Animal, AnimalImage
 from typing import Optional, List
-from dependencies import get_current_user
 import shutil
 import os
 import uuid
@@ -10,11 +9,29 @@ import uuid
 UPLOAD_DIR = "uploads/animaux"
 os.makedirs(UPLOAD_DIR, exist_ok=True)  # Crée le dossier s'il n'existe pas
 
-def create_animal(session: Session, nom: str, age: int, poids: int, couleur: str, 
-                  regime_alimentaire: str, date_last_vaccin: str, espece_id: int, race: str,
-                  images: Optional[List[UploadFile]] = None):
+VALID_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.svg']
+
+def save_image(image):
     """
-    Crée un nouvel animal et enregistre ses images sur le serveur et en base de données.
+    Sauvegarde une image sur le serveur et retourne l'URL.
+    """
+    file_extension = os.path.splitext(image.filename)[1].lower()
+    if file_extension not in VALID_IMAGE_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Format d'image non valide.")
+
+    unique_filename = f"{uuid.uuid4().hex}{file_extension}"
+    file_path = os.path.join(UPLOAD_DIR, unique_filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(image.file, buffer)
+
+    return f"/{file_path}"
+
+def create_animal(session: Session, nom: str, age: int, poids: int, couleur: str, 
+                  regime_alimentaire: str, date_last_vaccin: str, espece_id: int, race: str, price: int,
+                  images: Optional[List] = None):
+    """
+    Crée un nouvel animal avec ses images.
     """
     animal = Animal(
         nom=nom,
@@ -24,6 +41,7 @@ def create_animal(session: Session, nom: str, age: int, poids: int, couleur: str
         regime_alimentaire=regime_alimentaire,
         date_last_vaccin=date_last_vaccin,
         race=race,
+        price=price,
         espece_id=espece_id,
     )
 
@@ -31,20 +49,9 @@ def create_animal(session: Session, nom: str, age: int, poids: int, couleur: str
     session.commit()
     session.refresh(animal)
 
-    VALID_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.svg']
-    if images: 
+    if images:
         for image in images:
-            file_extension = os.path.splitext(image.filename)[1].lower()
-            if file_extension not in VALID_IMAGE_EXTENSIONS:
-                raise HTTPException(status_code=400, detail="Format d'image non valide.")
-
-            unique_filename = f"{uuid.uuid4().hex}{file_extension}"
-            file_path = os.path.join(UPLOAD_DIR, unique_filename)
-
-            with open(file_path, "wb") as buffer:
-                shutil.copyfileobj(image.file, buffer)
-
-            url = f"/{file_path}"
+            url = save_image(image)
             image_record = AnimalImage(url=url, animal_id=animal.id)
             session.add(image_record)
 
@@ -53,7 +60,7 @@ def create_animal(session: Session, nom: str, age: int, poids: int, couleur: str
 
 def get_animal(session: Session, animal_id: int):
     """
-    Récupère un animal par son ID, ainsi que ses images associées.
+    Récupère un animal par son ID avec ses images.
     """
     animal = session.get(Animal, animal_id)
     if not animal:
@@ -64,13 +71,9 @@ def get_animal(session: Session, animal_id: int):
 
     return animal
 
-def get_animals(
-    session: Session,
-    espece_id: Optional[int] = None,
-    current_user: User = Depends(get_current_user)
-):
+def get_animals(session: Session, espece_id: Optional[int] = None):
     """
-    Récupère tous les animaux de l'utilisateur connecté, avec leurs images associées.
+    Récupère tous les animaux, filtrés par espèce si besoin.
     """
     query = select(Animal)
     if espece_id:
@@ -83,19 +86,10 @@ def get_animals(
 
     return animals
 
-def update_animal(
-    session: Session,
-    animal_id: int,
-    nom: str,
-    age: int,
-    poids: int,
-    couleur: str,
-    race:str,
-    new_images: Optional[List[UploadFile]] = None,
-    delete_image_ids: Optional[List[int]] = None
-):
+def update_animal(session: Session, animal_id: int, nom: str, age: int, poids: int, couleur: str,
+                  race: str, price: int, new_images: Optional[List] = None, delete_image_ids: Optional[List[int]] = None):
     """
-    Met à jour les informations d'un animal et gère ses images.
+    Met à jour un animal et gère ses images.
     """
     animal = session.get(Animal, animal_id)
     if not animal:
@@ -104,9 +98,11 @@ def update_animal(
     animal.nom = nom
     animal.age = age
     animal.poids = poids
-    animal.couleur = couleur,
-    animal.race= race
+    animal.couleur = couleur
+    animal.race = race
+    animal.price = price
 
+    # Supprimer les anciennes images sélectionnées
     if delete_image_ids:
         for image_id in delete_image_ids:
             image = session.get(AnimalImage, image_id)
@@ -115,20 +111,10 @@ def update_animal(
                     os.remove(image.url.strip("/"))
                 session.delete(image)
 
+    # Ajouter de nouvelles images
     if new_images:
-        VALID_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.svg']
         for image in new_images:
-            file_extension = os.path.splitext(image.filename)[1].lower()
-            if file_extension not in VALID_IMAGE_EXTENSIONS:
-                raise HTTPException(status_code=400, detail="Format d'image non valide.")
-
-            unique_filename = f"{uuid.uuid4().hex}{file_extension}"
-            file_path = os.path.join(UPLOAD_DIR, unique_filename)
-
-            with open(file_path, "wb") as buffer:
-                shutil.copyfileobj(image.file, buffer)
-
-            url = f"/{file_path}"
+            url = save_image(image)
             image_record = AnimalImage(url=url, animal_id=animal.id)
             session.add(image_record)
 
@@ -138,7 +124,7 @@ def update_animal(
 
 def delete_animal(session: Session, animal_id: int):
     """
-    Supprime un animal ainsi que toutes ses images associées.
+    Supprime un animal et ses images.
     """
     animal = session.get(Animal, animal_id)
     if not animal:
@@ -149,8 +135,6 @@ def delete_animal(session: Session, animal_id: int):
     for image in images:
         if os.path.exists(image.url.strip("/")):
             os.remove(image.url.strip("/"))
-
-    for image in images:
         session.delete(image)
 
     session.delete(animal)

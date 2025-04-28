@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Depends, File, Form, UploadFile
+import os
+import uuid
+import shutil
+from fastapi import APIRouter, Depends, File, Form, UploadFile, HTTPException
 from sqlmodel import Session
 from database import get_session
 from models import Animal, User
@@ -73,3 +76,21 @@ def update_existing_animal(
 @router.delete("/animaux/{animal_id}")
 def delete_existing_animal(animal_id: int, session: Session = Depends(get_session)):
     return delete_animal(session, animal_id)
+
+
+@router.post("/upload-image/")
+async def upload_image(file: UploadFile = File(...)):
+    VALID_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.tiff', '.svg']
+    file_extension = os.path.splitext(file.filename)[1].lower()
+
+    if file_extension not in VALID_IMAGE_EXTENSIONS:
+        raise HTTPException(status_code=400, detail="Format d'image non valide.")
+
+    unique_filename = f"{uuid.uuid4().hex}{file_extension}"
+    file_path = os.path.join(UPLOAD_DIR, unique_filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    url = f"/{file_path}"  # URL à enregistrer dans la base
+    return {"url": url}

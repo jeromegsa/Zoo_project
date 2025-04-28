@@ -9,6 +9,7 @@ class Animal(SQLModel, table=True):
     nom: str = Field(index=True)
     age: Optional[int] = None
     poids: Optional[int]=Field(ge=1)
+    price: Optional[int]=Field(ge=100)
     couleur:Optional[str]=Field(default= "Noire")
     regime_alimentaire:Optional[str]
     date_last_vaccin: datetime.date
@@ -32,6 +33,7 @@ class AnimalCreate(SQLModel):
     couleur: str
     regime_alimentaire: str
     race: str
+    price:int
     date_last_vaccin: str
     espece_id: int
     images: Optional[ List[UploadFile]  ]# Liste de fichiers uploadés
