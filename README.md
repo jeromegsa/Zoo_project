@@ -1,4 +1,4 @@
-# Zoo Project — Application de gestion de zoo
+# Zoo Project - Application de gestion de zoo
 
 Application web full-stack de gestion d'un zoo : suivi des animaux,
 de leurs espèces et races, gestion des vétérinaires, upload de photos
